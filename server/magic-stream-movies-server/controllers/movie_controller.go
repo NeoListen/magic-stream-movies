@@ -78,6 +78,6 @@ func AddMovie() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to insert movie"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"movie": one})
+		c.JSON(http.StatusCreated, gin.H{"movie": one})
 	}
 }
