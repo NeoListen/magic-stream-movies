@@ -2,10 +2,13 @@ package utils
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/NeoListen/magic-stream-movies/server/magic-stream-movies-server/database"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -52,7 +55,7 @@ func GenerateAllTokens(email, firstName, lastName, role, userId string) (string,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "MagicStream",
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
@@ -81,4 +84,34 @@ func UpdateAllTokens(userId, token, refreshToken string) (err error) {
 		return err
 	}
 	return nil
+}
+
+func GetAccessToken(c *gin.Context) (string, error) {
+	authHeader := c.Request.Header.Get("Authorization")
+	if authHeader == "" {
+		return "", errors.New("Authorization header is required")
+	}
+	tokenString := authHeader[len("Bearer "):]
+	if tokenString == "" {
+		return "", errors.New("Bearer token is required")
+	}
+	return tokenString, nil
+}
+
+func ValidateToken(tokenString string) (*SignedDetails, error) {
+	claims := &SignedDetails{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_KEY), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+	}
+
+	if claims.ExpiresAt.Time.Before(time.Now()) {
+		return nil, errors.New("Token has expired")
+	}
+	return claims, nil
 }

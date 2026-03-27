@@ -1,22 +1,15 @@
 package main
 
 import (
-	controller "github.com/NeoListen/magic-stream-movies/server/magic-stream-movies-server/controllers"
+	"github.com/NeoListen/magic-stream-movies/server/magic-stream-movies-server/routes"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "Hello World"})
-	})
-
-	router.GET("/movies", controller.GetMovies())
-	router.GET("/movie/:imdb_id", controller.GetMovie())
-	router.POST("/movie", controller.AddMovie())
-	router.POST("/register", controller.RegisterUser())
-	router.POST("/login", controller.LoginUser())
+	routes.SetupUnprotectedRoutes(router)
+	routes.SetupProtectedRoutes(router)
 
 	if err := router.Run(":8080"); err != nil {
 		panic(err)
