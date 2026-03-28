@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	
+
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func DBInstance() *mongo.Client {
+func Connect() *mongo.Client {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Println("Warning: unable to fund .env file")
@@ -29,17 +29,21 @@ func DBInstance() *mongo.Client {
 	return client
 }
 
-var Client *mongo.Client = DBInstance()
+//var Client *mongo.Client = Connect()
 
-func OpenCollection(collectionName string) *mongo.Collection {
+func OpenCollection(collectionName string, client *mongo.Client) *mongo.Collection {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Println("Warning: unable to fund .env file")
 	}
 	databaseName := os.Getenv("DATABASE_NAME")
+	fmt.Println("DATABASE_NAME: ", databaseName)
 	if databaseName == "" {
 		log.Fatal("DATABASE_NAME not set!")
 	}
-	collection := Client.Database(databaseName).Collection(collectionName)
+	collection := client.Database(databaseName).Collection(collectionName)
+	if collection == nil {
+		return nil
+	}
 	return collection
 }
