@@ -52,6 +52,7 @@ func RegisterUser() gin.HandlerFunc {
 		}
 		if count > 0 {
 			c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
+			return
 		}
 		user.UserID = bson.NewObjectID().Hex()
 		user.CreatedAt = time.Now()

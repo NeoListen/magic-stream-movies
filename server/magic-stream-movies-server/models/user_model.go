@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID              bson.ObjectID `bson:"_id,omitempty " json:"id,omitempty"`
+	ID              bson.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	UserID          string        `bson:"user_id" json:"user_id"`
 	FirstName       string        `bson:"first_name" json:"first_name" validate:"required,min=2,max=100"`
 	LastName        string        `bson:"last_name" json:"last_name" validate:"required,min=2,max=100"`
@@ -20,7 +20,6 @@ type User struct {
 	RefreshToken    string        `bson:"refresh_token" json:"refresh_token"`
 	FavouriteGenres []Genre       `bson:"favourite_genres" json:"favourite_genres" validate:"required,dive"`
 }
-
 type UserLogin struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
