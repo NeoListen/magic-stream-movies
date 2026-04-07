@@ -1,0 +1,54 @@
+import {useState} from "react";
+import {Button, Container, Nav, Navbar} from 'react-bootstrap'
+import {NavLink, useNavigate} from "react-router-dom";
+
+const Header = () => {
+    const navigate = useNavigate();
+    const [auth, setAuth] = useState(false)
+    return (
+        <Navbar bg="dark" variant="dark" expand="lg" className="shadow-sm">
+            <Container>
+                <Navbar.Brand>
+                    Magic Stream Movie
+                </Navbar.Brand>
+
+                <Navbar.Toggle aria-controls="main-navbar-nav"/>
+                <Navbar.Collapse>
+                    <Nav className="me-auto">
+                        <Nav.Link as={NavLink} to="/">
+                            Home
+                        </Nav.Link>
+                        <Nav.Link as={NavLink} to="/recommended">
+                            Recommended
+                        </Nav.Link>
+                    </Nav>
+                    <Nav className="ms-auto align-items-center">
+                        {auth ? (
+                            <>
+                    <span>
+                        Hello, <strong>Name</strong>
+                    </span>
+                                <Button variant="outline-light" size="sm">
+                                    Logout
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button variant="outline-info" size="sm" className="me-2"
+                                        onClick={() => navigate("/login")}>
+                                    Login
+                                </Button>
+                                <Button variant="info" size="sm" onClick={() => navigate("/register")}>
+                                    Register
+                                </Button>
+                            </>
+                        )
+                        }
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
+    )
+}
+
+export default Header
